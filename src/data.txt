@@ -1,0 +1,35 @@
+Generate a personalized workout plan of a 18 year men with 70kg weight and 5'7 feet height whose main focus is muscle gain and has an intermediate experience in workout. Plan the workout for 6 days a week for 60 min a day with a hight excercise  intensity. The workout plan should include exercises only from the following list:
+Bench Press (Incline, Decline, Flat)
+Push-ups
+Dumbbell Press (Incline, Decline, Flat)
+Cable Crossovers
+Pec Deck Flyes
+Deadlift
+Pull-ups
+Lat Pulldowns
+Seated Cable Rows
+Bent-over Rows
+Overhead Press (Barbell, Dumbbell)
+Lateral Raises
+Front Raises
+Face Pulls
+Upright Rows
+Squats
+Lunges
+Leg Press
+Hamstring Curls
+Calf Raises
+Bicep Curls (Barbell, Dumbbell, Hammer)
+Concentration Curls
+Chin-ups
+Tricep Pushdowns
+Overhead Tricep Extensions
+Skullcrushers
+Dips
+Crunches
+Leg Raises
+Planks
+Russian Twists
+Bicycle Crunches
+
+GIve the output in json formatt with all the information needed for a perfect workout for a week
