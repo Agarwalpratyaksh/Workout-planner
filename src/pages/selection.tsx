@@ -6,8 +6,19 @@ import fitnessGoals from "@/data/fitnessGoals";
 import experienceLevels from "@/data/experienceLevels";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import {  useSetRecoilState } from "recoil";
+import { planDetails } from "@/services/atoms";
+import { Link, useNavigate } from "react-router";
+import { Dumbbell } from "lucide-react";
 
-function Selection() {
+
+
+
+export default function Selection() {
+
+    const setPlan = useSetRecoilState(planDetails)
+    const navigate = useNavigate()
+
   const [info, setInfo] = useState({
     age: "",
     sex: "",
@@ -28,33 +39,123 @@ function Selection() {
     console.log(info);
   }, [info]);
 
-  async function generatePlan() {
-    const prompt =
-      "Generate a personalized workout plan of a {age} year {sex} with {weight}kg weight and {height} feet height whose main focus is {type_of_excercise} and has an {experience} experience in workout. Plan the workout for {days} days a week for {duration} min a day with a {intensity} exercise  intensity. ";
+  // async function generatePlan() {
+  //   const prompt =
+  //     "Generate a personalized workout plan of a {age} year {sex} with {weight}kg weight and {height} feet height whose main focus is {type_of_excercise} and has an {experience} experience in workout. Plan the workout for {days} days a week for {duration} min a day with a {intensity} exercise  intensity. ";
 
-    //@ts-ignore
+  //   //@ts-ignore
+  //   const finalPrompt = prompt
+  //     .replace("{age}", info.age)
+  //     .replace("{sex}", info.sex)
+  //     .replace("{weight}",info.weight)
+  //     .replace("{height}", info.height)
+  //     .replace("{type_of_excercise}",info.goal)
+  //     .replace("{experience}", info.experience)
+  //     .replace("{days}", info.days)
+  //     .replace("{duration}", info.duration)
+  //     .replace("{intensity}", info.intensity);
+
+  //     console.log(finalPrompt);
+
+  //   const result = await chatSession.sendMessage(finalPrompt);
+    
+  //   const output = result.response.text();
+  //   setPlan(output)
+  //   console.log(output);
+  //   setTimeout(()=>{
+  //     navigate('/workoutPlan')
+  //   },1000)
+
+    
+
+    
+   
+  // }
+  async function generatePlan() {
+    const prompt = `
+      Generate a personalized workout plan for a {age} year {sex} with {weight}kg weight and {height} feet height whose main focus is {type_of_excercise} and has an {experience} experience in workout. Plan the workout for {days} days a week for {duration} min a day with a {intensity} exercise intensity.
+  
+      Return the response in the following JSON format exactly:
+      {
+        "workoutPlan": {
+          "client": {
+            "age": number,
+            "weight": number,
+            "height": number,
+            "experience": string,
+            "goal": string
+          },
+          "schedule": {
+            "daysPerWeek": number,
+            "durationPerDay": number
+          },
+          "weeklyPlan": [
+            {
+              "day": string,
+              "focus": string,
+              "exercises": [
+                {
+                  "name": string,
+                  "sets": number,
+                  "reps": string
+                }
+              ]
+            }
+          ],
+          "notes": [string]
+        }
+      }`;
+  
     const finalPrompt = prompt
       .replace("{age}", info.age)
       .replace("{sex}", info.sex)
-      .replace("{weight}",info.weight)
+      .replace("{weight}", info.weight)
       .replace("{height}", info.height)
-      .replace("{type_of_excercise}",info.goal)
+      .replace("{type_of_excercise}", info.goal)
       .replace("{experience}", info.experience)
       .replace("{days}", info.days)
       .replace("{duration}", info.duration)
       .replace("{intensity}", info.intensity);
-
-      console.log(finalPrompt);
-
-    const result = await chatSession.sendMessage(finalPrompt);
-    console.log(result.response.text());
+  
+    try {
+      const result = await chatSession.sendMessage(finalPrompt);
+      const output = result.response.text();
+      console.log(output);
+      console.log(typeof output);
+      
+      // converting output into JSON
+      const parsedOutput = JSON.parse(output);
+      console.log(parsedOutput);
+      
+      // Validate that the required properties exist
+      if (!parsedOutput?.workoutPlan?.weeklyPlan || !parsedOutput?.workoutPlan?.notes) {
+        throw new Error('Custom Error :Invalid response format');
+      }
+      localStorage.setItem('workoutPlan', JSON.stringify(parsedOutput));
+      
+      setPlan(parsedOutput);
+      setTimeout(() => {
+        navigate('/workoutPlan');
+      }, 1000);
+    } catch (error) {
+      console.error("Error generating workout plan:", error);
+      // Add error handling UI here
+    }
   }
 
   return (
-    <div className=" h-screen p-5 w-full">
-      <div className="mt-2 flex justify-between mb-5">
-        <div className="ml-3">Workit</div>
-      </div>
+    <div className=" h-screen w-full">
+      <header className="flex justify-between items-center py-5 px-8 bg-white shadow-sm">
+      <Link to={'/'}>
+        <div className="flex items-center space-x-2">
+          
+          <Dumbbell className="h-8 w-8 text-blue-600" />
+          <h1 className="text-2xl font-bold text-gray-800">Workit</h1>
+          
+        </div>
+        </Link>
+        
+      </header>
 
       <div className=" sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10 py-2 ">
         <div></div>
@@ -212,11 +313,8 @@ function Selection() {
 
       </div>
 
-      {/* <div className='flex justify-center items-center'>
-        <button className='border-spacing-2 border-yellow-950 border-2 p-4 rounded-full mt-5' onClick={generatePlan}>Generate</button>
-      </div> */}
     </div>
   );
 }
 
-export default Selection;
+
