@@ -15,7 +15,7 @@ import { Dumbbell } from "lucide-react";
 
 
 export default function Selection() {
-
+  const [loading,setLoading] = useState(false)
     const setPlan = useSetRecoilState(planDetails)
     const navigate = useNavigate()
 
@@ -39,39 +39,9 @@ export default function Selection() {
     console.log(info);
   }, [info]);
 
-  // async function generatePlan() {
-  //   const prompt =
-  //     "Generate a personalized workout plan of a {age} year {sex} with {weight}kg weight and {height} feet height whose main focus is {type_of_excercise} and has an {experience} experience in workout. Plan the workout for {days} days a week for {duration} min a day with a {intensity} exercise  intensity. ";
-
-  //   //@ts-ignore
-  //   const finalPrompt = prompt
-  //     .replace("{age}", info.age)
-  //     .replace("{sex}", info.sex)
-  //     .replace("{weight}",info.weight)
-  //     .replace("{height}", info.height)
-  //     .replace("{type_of_excercise}",info.goal)
-  //     .replace("{experience}", info.experience)
-  //     .replace("{days}", info.days)
-  //     .replace("{duration}", info.duration)
-  //     .replace("{intensity}", info.intensity);
-
-  //     console.log(finalPrompt);
-
-  //   const result = await chatSession.sendMessage(finalPrompt);
-    
-  //   const output = result.response.text();
-  //   setPlan(output)
-  //   console.log(output);
-  //   setTimeout(()=>{
-  //     navigate('/workoutPlan')
-  //   },1000)
-
-    
-
-    
-   
-  // }
+ 
   async function generatePlan() {
+    setLoading(true)
     const prompt = `
       Generate a personalized workout plan for a {age} year {sex} with {weight}kg weight and {height} feet height whose main focus is {type_of_excercise} and has an {experience} experience in workout. Plan the workout for {days} days a week for {duration} min a day with a {intensity} exercise intensity.
   
@@ -134,9 +104,10 @@ export default function Selection() {
       localStorage.setItem('workoutPlan', JSON.stringify(parsedOutput));
       
       setPlan(parsedOutput);
+      setLoading(false)
       setTimeout(() => {
         navigate('/workoutPlan');
-      }, 1000);
+      }, 500);
     } catch (error) {
       console.error("Error generating workout plan:", error);
       // Add error handling UI here
@@ -229,9 +200,9 @@ export default function Selection() {
         </div>
 
         <h2 className="text-2xl font-bold my-10  ">
-          What are your fitness goals?
+        What is your current fitness level?
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-3 gap-8 place-items-center lg:place-items-start">
           {experienceLevels.map((exp) => (
             <div
               key={exp.id}
@@ -307,7 +278,14 @@ export default function Selection() {
         </div>
 
         {/* Submit button */}
-                <Button className="my-10 w-full text-xl h-15 font-normal" onClick={generatePlan}>Submit</Button>
+        <Button className={`my-10 w-full text-xl h-15 font-normal ${loading && 'cursor-not-allowed opacity-70'}  `} onClick={generatePlan}>{loading ?<div
+  className="  inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+  role="status">
+  <span
+    className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+    >Loading...</span
+  >
+</div>: "Generate Plan"}</Button>
 
 
 
