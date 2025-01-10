@@ -6,18 +6,15 @@ import fitnessGoals from "@/data/fitnessGoals";
 import experienceLevels from "@/data/experienceLevels";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import {  useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { planDetails } from "@/services/atoms";
 import { Link, useNavigate } from "react-router";
 import { Dumbbell } from "lucide-react";
 
-
-
-
 export default function Selection() {
-  const [loading,setLoading] = useState(false)
-    const setPlan = useSetRecoilState(planDetails)
-    const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const setPlan = useSetRecoilState(planDetails);
+  const navigate = useNavigate();
 
   const [info, setInfo] = useState({
     age: "",
@@ -39,9 +36,8 @@ export default function Selection() {
     console.log(info);
   }, [info]);
 
- 
   async function generatePlan() {
-    setLoading(true)
+    setLoading(true);
     const prompt = `
       Generate a personalized workout plan for a {age} year {sex} with {weight}kg weight and {height} feet height whose main focus is {type_of_excercise} and has an {experience} experience in workout. Plan the workout for {days} days a week for {duration} min a day with a {intensity} exercise intensity.
   
@@ -75,7 +71,7 @@ export default function Selection() {
           "notes": [string]
         }
       }`;
-  
+
     const finalPrompt = prompt
       .replace("{age}", info.age)
       .replace("{sex}", info.sex)
@@ -86,46 +82,45 @@ export default function Selection() {
       .replace("{days}", info.days)
       .replace("{duration}", info.duration)
       .replace("{intensity}", info.intensity);
-  
+
     try {
       const result = await chatSession.sendMessage(finalPrompt);
       const output = result.response.text();
       console.log(output);
       console.log(typeof output);
-      
-      // converting output into JSON
+
+      // converting output into JSON as the output from gemini is a json in form of string
       const parsedOutput = JSON.parse(output);
       console.log(parsedOutput);
-      
+
       // Validate that the required properties exist
-      if (!parsedOutput?.workoutPlan?.weeklyPlan || !parsedOutput?.workoutPlan?.notes) {
-        throw new Error('Custom Error :Invalid response format');
+      if (
+        !parsedOutput?.workoutPlan?.weeklyPlan ||
+        !parsedOutput?.workoutPlan?.notes
+      ) {
+        throw new Error("Custom Error :Invalid response format");
       }
-      localStorage.setItem('workoutPlan', JSON.stringify(parsedOutput));
-      
+      localStorage.setItem("workoutPlan", JSON.stringify(parsedOutput));
+
       setPlan(parsedOutput);
-      setLoading(false)
+      setLoading(false);
       setTimeout(() => {
-        navigate('/workoutPlan');
+        navigate("/workoutPlan");
       }, 500);
     } catch (error) {
       console.error("Error generating workout plan:", error);
-      // Add error handling UI here
     }
   }
 
   return (
     <div className=" h-screen w-full">
       <header className="flex justify-between items-center py-5 px-8 bg-white shadow-sm">
-      <Link to={'/'}>
-        <div className="flex items-center space-x-2">
-          
-          <Dumbbell className="h-8 w-8 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-800">Workit</h1>
-          
-        </div>
+        <Link to={"/"}>
+          <div className="flex items-center space-x-2">
+            <Dumbbell className="h-8 w-8 text-blue-600" />
+            <h1 className="text-2xl font-bold text-gray-800">Workit</h1>
+          </div>
         </Link>
-        
       </header>
 
       <div className=" sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10 py-2 ">
@@ -200,7 +195,7 @@ export default function Selection() {
         </div>
 
         <h2 className="text-2xl font-bold my-10  ">
-        What is your current fitness level?
+          What is your current fitness level?
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-3 gap-8 place-items-center lg:place-items-start">
           {experienceLevels.map((exp) => (
@@ -248,51 +243,56 @@ export default function Selection() {
         </div>
 
         <h2 className="text-2xl font-bold my-10  ">
-        How often can you work out?
+          How often can you work out?
         </h2>
         <div className="flex justify-between items-end ">
           <div className="w-1/2 mr-16">
-        <h2 className="text-lg font-medium m-2">Days per Week</h2>
-        <Input
-                type="text"
-                name="days"
-                onChange={(e) => {
-                  handleForm("days", e.target.value);
-                }}
-                placeholder="Ex: 4"
-                
-              />
+            <h2 className="text-lg font-medium m-2">Days per Week</h2>
+            <Input
+              type="text"
+              name="days"
+              onChange={(e) => {
+                handleForm("days", e.target.value);
+              }}
+              placeholder="Ex: 4"
+            />
           </div>
           <div className="w-1/2">
-          <h2 className="text-lg font-medium m-2">Workout Duration (minutes)</h2>
-        <Input
-                type="text"
-                name="duration"
-                onChange={(e) => {
-                  handleForm("duration", e.target.value);
-                }}
-                placeholder="Ex: 90"
-              />
+            <h2 className="text-lg font-medium m-2">
+              Workout Duration (minutes)
+            </h2>
+            <Input
+              type="text"
+              name="duration"
+              onChange={(e) => {
+                handleForm("duration", e.target.value);
+              }}
+              placeholder="Ex: 90"
+            />
           </div>
-
         </div>
 
         {/* Submit button */}
-        <Button className={`my-10 w-full text-xl h-15 font-normal ${loading && 'cursor-not-allowed opacity-70'}  `} onClick={generatePlan}>{loading ?<div
-  className="  inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
-  role="status">
-  <span
-    className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
-    >Loading...</span
-  >
-</div>: "Generate Plan"}</Button>
-
-
-
+        <Button
+          className={`my-10 w-full text-xl h-15 font-normal ${
+            loading && "cursor-not-allowed opacity-70"
+          }  `}
+          onClick={generatePlan}
+        >
+          {loading ? (
+            <div
+              className="  inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+              role="status"
+            >
+              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                Loading...
+              </span>
+            </div>
+          ) : (
+            "Generate Plan"
+          )}
+        </Button>
       </div>
-
     </div>
   );
 }
-
-
