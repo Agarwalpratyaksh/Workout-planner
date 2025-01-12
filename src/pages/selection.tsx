@@ -183,7 +183,7 @@ export default function Selection() {
               className={` h-36 w-72 p-4  border-2 hover:cursor-pointer hover:shadow-md rounded-xl ${
                 info.goal == goals.name ? "border-black" : "border-slate-300"
               }`}
-              onClick={(e) => {
+              onClick={() => {
                 handleForm("goal", goals.name);
               }}
             >
@@ -206,7 +206,7 @@ export default function Selection() {
                   ? "border-black"
                   : "border-slate-300"
               } `}
-              onClick={(e) => {
+              onClick={() => {
                 handleForm("experience", exp.name);
               }}
             >

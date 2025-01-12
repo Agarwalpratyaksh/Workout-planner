@@ -1,7 +1,8 @@
+//this was only made for testing purpose, main code is written in workoutplan.tsx
+
 import allExercises from "@/data/allExcercises";
 import { planDetails } from "@/services/atoms";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { useEffect } from "react";
 
 interface Exercise {
   name: string;
@@ -36,7 +37,7 @@ interface WorkoutPlan {
 
 function WorkoutPlan() {
   const plan: WorkoutPlan = useRecoilValue(planDetails);
-  const setPlan = useSetRecoilState(planDetails);
+  
 
   // Load plan from localStorage on component mount
   // useEffect(() => {
@@ -59,10 +60,15 @@ function WorkoutPlan() {
   };
 
   // Get plan data from either Recoil state or localStorage
-  const workoutData = plan?.workoutPlan?.weeklyPlan ? plan : JSON.parse(localStorage.getItem('workoutPlan') || '{}');
+  const workoutData = plan?.workoutPlan?.weeklyPlan
+    ? plan
+    : JSON.parse(localStorage.getItem("workoutPlan") || "{}");
 
   // Check if we have valid data
-  if (!workoutData?.workoutPlan?.weeklyPlan || !workoutData?.workoutPlan?.notes) {
+  if (
+    !workoutData?.workoutPlan?.weeklyPlan ||
+    !workoutData?.workoutPlan?.notes
+  ) {
     return (
       <div className="p-4 text-center">
         <h2 className="text-2xl font-bold text-red-500">
@@ -95,7 +101,7 @@ function WorkoutPlan() {
       <div className="bg-white p-5 rounded-lg shadow-md mb-6">
         <h4 className="text-2xl font-semibold text-gray-800 mb-4">Notes</h4>
         <ul className="list-disc list-inside text-gray-700">
-          {notes.map((note:string, index:number) => (
+          {notes.map((note: string, index: number) => (
             <li key={index} className="mb-2">
               {note}
             </li>
@@ -105,7 +111,7 @@ function WorkoutPlan() {
 
       {/* Weekly Plan */}
       <div>
-        {weeklyPlan.map((daily:any, index:number) => (
+        {weeklyPlan.map((daily: any, index: number) => (
           <div
             key={index}
             className="bg-gray-100 p-8 mb-6 rounded-lg border border-black"
@@ -117,7 +123,7 @@ function WorkoutPlan() {
 
             {/* Exercises */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {daily.exercises.map((exercise:any, indx:number) => {
+              {daily.exercises.map((exercise: any, indx: number) => {
                 const videoUrl = getExerciseVideo(exercise.name);
                 return (
                   <div
